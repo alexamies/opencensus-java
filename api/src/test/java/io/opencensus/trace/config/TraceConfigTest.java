@@ -18,7 +18,9 @@ package io.opencensus.trace.config;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import io.opencensus.trace.Sampler;
 import io.opencensus.trace.samplers.Samplers;
+import io.opencensus.trace.Tracing;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -31,6 +33,17 @@ public class TraceConfigTest {
   @Test
   public void activeTraceParams_NoOpImplementation() {
     assertThat(traceConfig.getActiveTraceParams()).isEqualTo(TraceParams.DEFAULT);
+  }
+
+  @Test
+  public void updateActiveTraceParams_AlwaysSample() {
+    TraceConfig traceConfig = Tracing.getTraceConfig();
+    TraceParams activeTraceParams = traceConfig.getActiveTraceParams();
+    traceConfig.updateActiveTraceParams(
+      activeTraceParams.toBuilder().setSampler(Samplers.alwaysSample()).build());
+
+    Sampler sampler = traceConfig.getActiveTraceParams().getSampler();
+    assertThat(sampler).isEqualTo(Samplers.alwaysSample());
   }
 
   @Test
